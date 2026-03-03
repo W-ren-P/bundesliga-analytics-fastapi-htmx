@@ -1,0 +1,4 @@
+my_database.db
+*.csv
+__pycache__/
+*.pyc
