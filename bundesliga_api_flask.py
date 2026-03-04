@@ -129,6 +129,7 @@ def db_status():
 
 
 @app.route('/teams')
+# @app.route('/')
 def teams_home():
     # teams = ['Bremen', 'Bayern', 'Leverkusen', 'Leipzig', 'Wolfsburg', 'Heidenheim', 'Hoffenheim', 'Freiburg', 'Augsburg','Gladbach',
     # 'Stuttgart', 'Bochum', 'Dortmund', 'Cologne', 'Union', 'Mainz', 'Frankfurt', 'Darmstadt']
@@ -138,8 +139,8 @@ def teams_home():
         "Stuttgart", "Bochum", "Dortmund", "Cologne", "Union",
         "Mainz", "Frankfurt", "Darmstadt"
     ]
-
-    return render_template('teams.html', teams=teams)
+    teams = sorted(teams)
+    return render_template('index.html', teams=teams)
 @app.route('/team/<team_name>')
 def team_detail(team_name):
     # conn = sqlite3.connect('my_database.db')
