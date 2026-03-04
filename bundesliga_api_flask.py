@@ -177,29 +177,39 @@ def team_detail(team_name):
 @app.route('/matches-outliers')
 def match_outliers():
 
-    stats = ['totalGoals', 'totalShots', 'totalShots_on_target']
+    stats = {
+        "totalGoals": "Total Goals",
+        "totalShots": "Total Shots",
+        "totalShots_on_target": "Shots on Target"
+    }
+
+    selected_stat = request.args.get("stat", "totalGoals")
+
+    if selected_stat not in stats:
+        selected_stat = "totalGoals"
 
     conn = sqlite3.connect(database_path)
     cursor = conn.cursor()
 
-    results = {}
+    query = f"""
+        SELECT m.Match_name, s.{selected_stat}
+        FROM match_cum_agg_stats s
+        JOIN matches m ON s.WS_match_id = m.WS_match_id
+        ORDER BY s.{selected_stat} DESC
+        LIMIT 10
+    """
 
-    for stat in stats:
-        query = f"""
-            SELECT m.Match_name, s.{stat}
-            FROM match_cum_agg_stats s
-            JOIN matches m ON s.WS_match_id = m.WS_match_id
-            ORDER BY s.{stat} DESC
-            LIMIT 10
-        """
-
-        cursor.execute(query)
-        results[stat] = cursor.fetchall()
+    cursor.execute(query)
+    results = cursor.fetchall()
 
     conn.close()
 
-    return render_template('matches_outliers.html', results=results)
-
+    return render_template(
+        "matches_outliers.html",
+        stats=stats,
+        selected_stat=selected_stat,
+        results=results
+    )
 
 
 if __name__ == '__main__':
