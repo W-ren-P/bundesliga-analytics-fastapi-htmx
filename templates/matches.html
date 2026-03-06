@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %}Match Outliers{% endblock %}
+{% block title %}Matches{% endblock %}
 
 {% block content %}
 
 
-<h2 class="mb-4">Match Outliers</h2>
+<h2 class="mb-4">Match outliers</h2>
 
 <!-- Dropdown Form -->
 <form method="GET" class="mb-4">
     <div class="row g-3 align-items-center">
         <div class="col-auto">
-            <label for="stat" class="col-form-label">Select Statistic:</label>
+            <label for="stat" class="col-form-label">Select statistic:</label>
         </div>
         <div class="col-auto">
             <select name="stat" id="stat" class="form-select" onchange="this.form.submit()">
