@@ -31,7 +31,7 @@ def home():
 #     # Convert data to a list of dictionaries for the template
 #     scorers_data = df.to_dict(orient='records')
 #     return render_template('index.html', scorers=scorers_data)
-    return render_template('index.html')
+    return render_template('index.html', page_title="Home")
 
 
 # @app.route('/top-scorers')
@@ -49,7 +49,8 @@ def home():
 #     data = df.to_dict(orient='records')
 # ##    return jsonify(df.to_dict(orient='records'))
 #     return render_template('index.html', scorers=data)
-@app.route('/top-scorers')
+# @app.route('/top-scorers')
+@app.route('/players')
 def top_scorers():
     # 1. Get the 'minutes' value from the URL (default to 15 if not found)
     selected_mins = request.args.get('minutes', default=15, type=int)
@@ -69,42 +70,39 @@ def top_scorers():
 
     data = df.to_dict(orient='records')
         # return render_template('index.html', scorers=data)
-    return render_template('index.html', scorers=data, current_mins=selected_mins)
+    # return render_template('index.html', scorers=data, current_mins=selected_mins, page_title="Top scorers")
+    return render_template('players.html', scorers=data, current_mins=selected_mins, page_title="Players")
 
-@app.route('/referees-cards-total')
-def referees_cards_total():
-    query = """
-        SELECT referees.ref_name, SUM(match_cum_agg_stats.totalTotal_Cards) AS card_count
-        FROM match_cum_agg_stats
+@app.route('/referees')
+def referees():
+    view = request.args.get('view', 'average')
+    if view == 'total':
+        query = """
+            SELECT referees.ref_name, SUM(match_cum_agg_stats.totalTotal_Cards) AS metric
+            FROM match_cum_agg_stats
+            JOIN matches ON match_cum_agg_stats.WS_match_id = matches.WS_match_id
+            JOIN referees ON referees.ref_code = matches.refereeCode
+            GROUP BY referees.ref_code, referees.ref_name
+            ORDER BY metric DESC;
+        """
+        label = "Total Cards" # Defined here
+    else:
+        query = """
+            SELECT referees.ref_name,
+                   ROUND(SUM(match_cum_agg_stats.totalTotal_Cards) * 1.0 / COUNT(match_cum_agg_stats.WS_match_id), 2) AS metric
+            FROM match_cum_agg_stats
+            JOIN matches ON match_cum_agg_stats.WS_match_id = matches.WS_match_id
+            JOIN referees ON referees.ref_code = matches.refereeCode
+            GROUP BY referees.ref_code, referees.ref_name
+            ORDER BY metric DESC;
+        """
+        label = "Cards Per Game" # YOU NEEDED THIS LINE
 
-        JOIN matches ON match_cum_agg_stats.WS_match_id = matches.WS_match_id
-        JOIN referees ON referees.ref_code = matches.refereeCode
-
-        GROUP BY referees.ref_code, referees.ref_name
-        ORDER BY card_count DESC;
-    """
     df = pd.read_sql(query, engine)
     data = df.to_dict(orient='records')
-##    return jsonify(df.to_dict(orient='records'))
-    return render_template('index.html', referees=data)
 
-@app.route('/referees-cards-average')
-def referees_cards_average():
-    query = """
-        SELECT referees.ref_name,
-               SUM(match_cum_agg_stats.totalTotal_Cards) AS total_cards,
-               COUNT(match_cum_agg_stats.WS_match_id) AS games_refereed,
-               ROUND(SUM(match_cum_agg_stats.totalTotal_Cards) * 1.0 / COUNT(match_cum_agg_stats.WS_match_id), 2) AS cards_per_game
-        FROM match_cum_agg_stats
-        JOIN matches ON match_cum_agg_stats.WS_match_id = matches.WS_match_id
-        JOIN referees ON referees.ref_code = matches.refereeCode
-        GROUP BY referees.ref_code, referees.ref_name
-        ORDER BY cards_per_game DESC;
-    """
-    df = pd.read_sql(query, engine)
-    data = df.to_dict(orient='records')
-##    return jsonify(df.to_dict(orient='records'))
-    return render_template('index.html', referees=data)
+    return render_template('referees.html', referees=data, current_view=view, metric_label=label, page_title="Referees")
+
 
 @app.route('/db-status')
 def db_status():
@@ -140,7 +138,7 @@ def teams_home():
         "Mainz", "Frankfurt", "Darmstadt"
     ]
     teams = sorted(teams)
-    return render_template('index.html', teams=teams)
+    return render_template('teams.html', teams=teams, page_title="Teams")
 @app.route('/team/<team_name>')
 def team_detail(team_name):
     # conn = sqlite3.connect('my_database.db')
@@ -171,10 +169,10 @@ def team_detail(team_name):
     return render_template('team_detail.html',
                                team=team_name,
                                player=top_player,
-                               goals=goals)
+                               goals=goals, page_title="Team page")
 
 
-@app.route('/matches-outliers')
+@app.route('/matches')
 def match_outliers():
 
     stats = {
@@ -205,10 +203,10 @@ def match_outliers():
     conn.close()
 
     return render_template(
-        "matches_outliers.html",
+        "matches.html",
         stats=stats,
         selected_stat=selected_stat,
-        results=results
+        results=results, page_title="Matches"
     )
 
 
