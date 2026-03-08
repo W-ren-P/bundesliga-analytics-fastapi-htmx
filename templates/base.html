@@ -31,7 +31,7 @@
 
         <!-- Central part -->
         <div class="position-absolute start-50 translate-middle-x">
-            <span class="text-white fw-bold" style="font-size: 1.5rem;">Bundesliga 2023-24 stats</span>
+            <span class="text-white fw-bold" style="font-size: 1.5rem;">BUNDESLIGA 2023-24 STATS</span>
         </div>
 
         <!-- Right part -->
@@ -44,7 +44,8 @@
     </div>
 </nav>
 
-<div class="container">
+<!--<div class="container">-->
+<div class="{% block container_class %}container{% endblock %}">
     {% block content %}
     {% endblock %}
 </div>
