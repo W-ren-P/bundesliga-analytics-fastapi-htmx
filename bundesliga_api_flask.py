@@ -5,75 +5,15 @@ from sqlalchemy import create_engine
 import sqlite3
 
 app = Flask(__name__)
-# engine = create_engine('mysql+pymysql://root:fe11ini07@localhost/bundesliga')
-# engine = create_engine('mysql+pymysql://root:gKfjDindMHctXqUDOpnkRIPGkWxYfSTh@tramway.proxy.rlwy.net:52998/railway')
-# engine = create_engine(
-#     'postgresql://postgres.vhznhbmqjigmjbwporfc:tPZ8edeuvBtciFqV@aws-1-eu-west-1.pooler.supabase.com:6543/postgres?sslmode=require'
-# )
-# engine = create_engine(
-#     'postgresql://postgres.vhznhbmqjigmjbwporfc:tPZ8edeuvBtciFqV@aws-1-eu-west-1.pooler.supabase.com:5432/postgres?sslmode=require'
-# )
 database_path = '/home/WrenP/my_database.db'
 engine = create_engine(f'sqlite:///{database_path}')
 
 
 @app.route('/')
 def home():
-#     query = """
-#         SELECT scorer_name, scorer_code, COUNT(*) AS goal_count
-#         FROM goals
-#         WHERE minute < 15
-#         GROUP BY scorer_name, scorer_code
-#         ORDER BY goal_count DESC
-#         LIMIT 10
-#     """
-#     df = pd.read_sql(query, engine)
-#     # Convert data to a list of dictionaries for the template
-#     scorers_data = df.to_dict(orient='records')
-#     return render_template('index.html', scorers=scorers_data)
     return render_template('index.html', page_title="Home")
 
 
-# @app.route('/top-scorers')
-# def top_scorers():
-# ##    engine = create_engine('mysql+pymysql://root:fe11ini07@localhost/bundesliga')
-#     query = """
-#         SELECT scorer_name, scorer_code, COUNT(*) AS goal_count
-#         FROM goals
-#         WHERE minute < 15
-#         GROUP BY scorer_name, scorer_code
-#         ORDER BY goal_count DESC
-#         LIMIT 10
-#     """
-#     df = pd.read_sql(query, engine)
-#     data = df.to_dict(orient='records')
-# ##    return jsonify(df.to_dict(orient='records'))
-#     return render_template('index.html', scorers=data)
-# @app.route('/top-scorers')
-#
-# @app.route('/players')
-# def top_scorers():
-#     # 1. Get the 'minutes' value from the URL (default to 15 if not found)
-#     selected_mins = request.args.get('minutes', default=15, type=int)
-
-#     # 2. Use the variable in your SQL query
-#     query = f"""
-#         SELECT scorer_name, COUNT(*) AS goal_count
-#         FROM goals
-#         WHERE minute < :mins
-#         GROUP BY scorer_name
-#         ORDER BY goal_count DESC
-#         LIMIT 15
-#     """
-
-#     # 3. Pass the variable into the execute command
-#     df = pd.read_sql(query, engine, params={'mins': selected_mins})
-
-#     data = df.to_dict(orient='records')
-#         # return render_template('index.html', scorers=data)
-#     # return render_template('index.html', scorers=data, current_mins=selected_mins, page_title="Top scorers")
-#     return render_template('players.html', scorers=data, current_mins=selected_mins, page_title="Players")
-#
 @app.route('/players')
 def top_scorers():
     selected_mins = request.args.get('minutes', default=15, type=int)
@@ -214,12 +154,6 @@ def team_detail(team_name):
         top_player = "No data"
         goals = 0
 
-    # # return render_template('team_detail.html', team=team_name)
-    # return render_template('team_detail.html',
-    #                           team=team_name,
-    #                           player=top_player,
-    #                           goals=goals, page_title="Team page")
-
     df_info = pd.read_csv('/home/WrenP/teams_info.csv', encoding = 'latin-1')
     df_info['team_name'] = df_info['team_name'].str.strip()
     team_info = df_info[df_info['team_name'] == team_name].iloc[0]
@@ -322,13 +256,6 @@ def match_outliers():
     results2 = cursor.fetchall()
 
     conn.close()
-
-    # return render_template(
-    #     "matches.html",
-    #     stats=stats,
-    #     selected_stat=selected_stat,
-    #     results=results, page_title="Matches"
-    # )
 
     return render_template(
         "matches.html",
