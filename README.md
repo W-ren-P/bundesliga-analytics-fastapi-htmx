@@ -13,7 +13,7 @@ Created using:
 
 ## Database setup
 
-See [docs/DB.md](docs/DB.md) for Python and SQL code for creating the database.
+See [docs/DB.md](docs/DB.md) for Python and SQL code to create a sample database.
 
 Sample data can be found [here](https://github.com/W-ren-P/bundesliga-analytics/tree/main/sample_data).
 
