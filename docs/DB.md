@@ -410,3 +410,9 @@ CREATE TABLE match_cum_agg_stats (
 );
 ```
 
+
+## Sample data
+
+Once the csv files have been created, the database is created using sqlite_1.py
+
+
