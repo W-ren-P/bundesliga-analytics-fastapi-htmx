@@ -1,3 +1,8 @@
+# DB
+
+[Sample data can be found here](https://github.com/W-ren-P/bundesliga-analytics/tree/main/sample_data)
+
+## Example sql queries
 
 Create goals table:
 
@@ -13,6 +18,7 @@ CREATE TABLE goals (
     FOREIGN KEY (team_code) REFERENCES teams(team_code)
 );
 ```
+
 
 Create matches table:
 
@@ -42,6 +48,7 @@ CREATE TABLE matches (
     FOREIGN KEY (away_Team_Code) references teams(team_code)
 );
 ```
+
 
 Create team_match_stats table:
 
@@ -184,7 +191,7 @@ CREATE TABLE team_match_stats (
 ```
 
 
-Create match_cum_agg_stats (ie. cumulative & aggregate stats table) table:
+Create match_cum_agg_stats (ie. cumulative & aggregate match stats) table:
 
 ```sql
 CREATE TABLE match_cum_agg_stats (
