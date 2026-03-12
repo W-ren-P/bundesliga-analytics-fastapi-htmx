@@ -411,7 +411,7 @@ CREATE TABLE match_cum_agg_stats (
 ```
 
 
-## Sample data
+## Creating my_database.db
 
 Once the csv files have been created, the database is created using [sqlite_1.py](https://github.com/W-ren-P/bundesliga-analytics/blob/main/sqlite_1.py)
 
