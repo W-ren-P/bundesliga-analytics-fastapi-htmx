@@ -327,6 +327,18 @@ async def match_outliers(
 
     return templates.TemplateResponse("matches.html", context)
 
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for Render"""
+    try:
+        with engine.connect() as conn:
+            conn.execute("SELECT 1")
+        return {"status": "healthy", "database": "connected"}
+    except Exception as e:
+        return {"status": "unhealthy", "error": str(e)}
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
