@@ -280,8 +280,6 @@ async def match_outliers(
     if team_stat not in team_stats:
         team_stat = "Goals"
 
-    conn = sqlite3.connect(DATABASE_PATH)
-    cursor = conn.cursor()
 
     query1 = f"""
         SELECT m.Match_name, s.{stat}
@@ -290,9 +288,7 @@ async def match_outliers(
         ORDER BY s.{stat} DESC
         LIMIT 10
     """
-    cursor.execute(query1)
-    results1 = cursor.fetchall()
-
+    
     query2 = f"""
         SELECT m.Match_name, t.team_name, s.{team_stat}
         FROM team_match_stats s
@@ -301,11 +297,20 @@ async def match_outliers(
         ORDER BY s.{team_stat} DESC
         LIMIT 10
     """
-    cursor.execute(query2)
-    results2 = cursor.fetchall()
 
-    conn.close()
+    try:
+        df1 = pd.read_sql(query1, engine)
+        results1 = [tuple(x) for x in df1.to_numpy()]
+    except Exception as e:
+        results1 = [("Error loading data", 0)]
+    
+    try:
+        df2 = pd.read_sql(query2, engine)
+        results2 = [tuple(x) for x in df2.to_numpy()]
+    except Exception as e:
+        results2 = [("Error loading data", "Error", 0)]
 
+    
     context = {
         "request": request,
         "stats": stats,
