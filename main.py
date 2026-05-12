@@ -17,8 +17,17 @@ SAMPLE_DATA_DIR = os.path.join(BASE_DIR, "sample_data")
 TEAMS_INFO_PATH = os.path.join(SAMPLE_DATA_DIR, "teams_info.csv")
 TABLE_PATH = os.path.join(SAMPLE_DATA_DIR, "table.csv")
 
+
 # Database engine
-engine = create_engine(f"sqlite:///{DATABASE_PATH}")
+# Database engine - use environment variable for Render, fallback to local SQLite
+DATABASE_URL = os.environ.get('DATABASE_URL', f"sqlite:///{DATABASE_PATH}")
+
+# Fix for Render's PostgreSQL URL format
+if DATABASE_URL and DATABASE_URL.startswith('postgres://'):
+    DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+
+engine = create_engine(DATABASE_URL)
+
 
 # Templates and Static files
 templates = Jinja2Templates(directory="templates")
