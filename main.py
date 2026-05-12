@@ -167,31 +167,27 @@ async def teams_home(request: Request):
         "page_title": "Teams"
     })
 
+
 @app.get("/teams/{team_name}", response_class=HTMLResponse)
 async def team_detail(request: Request, team_name: str):
-    conn = sqlite3.connect(DATABASE_PATH)
-    cursor = conn.cursor()
-
     query = """
     SELECT g.scorer_name, COUNT(*) AS goal_count
     FROM goals g
     JOIN teams t ON g.team_code = t.team_code
-    WHERE t.team_name = ?
+    WHERE t.team_name = :team_name
     GROUP BY g.scorer_name
     ORDER BY goal_count DESC
     LIMIT 1;
     """
 
-    cursor.execute(query, (team_name,))
-    result = cursor.fetchone()
-    conn.close()
-
-    if result:
-        top_player = result[0]
-        goals = result[1]
+    df_result = pd.read_sql(query, engine, params={'team_name': team_name})
+    if not df_result.empty:
+        top_player = df_result.iloc[0]['scorer_name']
+        goals = df_result.iloc[0]['goal_count']
     else:
         top_player = "No data"
         goals = 0
+
 
     try:
         df_info = pd.read_csv(TEAMS_INFO_PATH, encoding='latin-1')
